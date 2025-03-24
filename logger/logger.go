@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"errors"
 	"github.com/natefinch/lumberjack"
 	"github.com/sirupsen/logrus"
 	"io"
@@ -18,14 +19,18 @@ const (
 
 var baseLog = logrus.New()
 
-func InitialLogger(option *Option) {
-	createLogDir()
+// InitialLogger 初始化日誌設定
+func InitialLogger(option *Option) error {
+	err := createLogDir()
+	if err != nil {
+		return err
+	}
 
 	option = checkOption(option)
 
 	baseLog.SetFormatter(&baseFormatter{})
 	baseLog.SetReportCaller(option.IsReportCaller)
-	baseLog.SetLevel(option.SetLevel)
+	baseLog.SetLevel(option.getSetLevel())
 
 	writers := io.MultiWriter(
 		os.Stdout, &lumberjack.Logger{
@@ -37,6 +42,8 @@ func InitialLogger(option *Option) {
 		})
 
 	baseLog.SetOutput(writers)
+
+	return nil
 }
 
 // LogInfo info 日誌
@@ -82,20 +89,18 @@ func checkOption(option *Option) *Option {
 }
 
 // 建立 log 資料夾
-func createLogDir() {
+func createLogDir() error {
 	_, err := os.Stat(logDirPath)
 	if err == nil {
-		return
+		return nil
 	}
 
 	if os.IsNotExist(err) {
 		err = os.Mkdir(logDirPath, os.ModePerm)
 		if err != nil {
-			panic("Failed to create log directory, error: " + err.Error())
+			return errors.New("Failed to create log directory, error: " + err.Error())
 		}
-
-		return
 	}
 
-	panic("Failed to check log directory, error: " + err.Error())
+	return errors.New("Failed to check log directory, error: " + err.Error())
 }
