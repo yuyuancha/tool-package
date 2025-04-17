@@ -28,7 +28,7 @@ func NewGemini() *Gemini {
 // RequestTextByText 透過文字請求文字回應
 func (gemini *Gemini) RequestTextByText(question string) (string, error) {
 	ctx := context.Background()
-	client, err := genai.NewClient(ctx, option.WithAPIKey(gmini.Token))
+	client, err := genai.NewClient(ctx, option.WithAPIKey(gemini.Token))
 	if err != nil {
 		return "", err
 	}
