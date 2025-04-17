@@ -3,7 +3,7 @@
 ### 使用方式
 
 ```shell
-go get -u github.com/yuyuancha/logger
+go get -u github.com/yuyuancha/tool-package/logger
 ```
 
 初始化日誌記錄器。
